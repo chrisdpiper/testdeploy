@@ -11,16 +11,36 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check workspace
+        run: |
+          echo "Workspace: $GITHUB_WORKSPACE"
+          echo "Hostname: $(hostname)"
+          echo "Architecture: $(uname -m)"
+          echo "Files:"
+          ls -la
+
       - name: Build
         run: |
+          cd /home/chris/code
+          echo "Running build.sh..."
           chmod +x build.sh
           ./build.sh
 
-      - name: Show build output
+      - name: Check build output
         run: |
+          cd /home/chris/code
           echo "Build output:"
           cat time.txt
           ls -l time.txt
+
+      - name: Check Python environment
+        run: |
+          /home/chris/code/venv/bin/python3 --version
+          /home/chris/code/venv/bin/python3 -c "import paramiko; print('Paramiko OK')"
+
+      - name: Check mover
+        run: |
+          ls -l /home/chris/code/mover.py
 
       - name: Run mover
         run: |
