@@ -1,28 +1,43 @@
-name: Run NUC Script
+name: Build and Deploy
 
 on:
   workflow_dispatch:
 
 jobs:
-  run-script:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          ./build.sh
+
+      - name: Save build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: build/your-file
+          
+  deploy:
+    needs: build
     runs-on: [self-hosted, Linux, X64]
 
     steps:
-      - name: Check runner
+      - name: Download build output
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: /home/chris/code/upload
+
+      - name: Check downloaded file
         run: |
-          echo "Hostname:"
-          hostname
+          echo "Downloaded files:"
+          ls -la /home/chris/code/upload
 
-          echo "Architecture:"
-          uname -m
-
-          echo "Python:"
-          python3 --version
-
-          echo "Script:"
-          ls -l /home/chris/code/*.py
-
-      - name: Run script
+      - name: Run mover
         run: |
           cd /home/chris/code
-          ./venv/bin/python3 mover.py
+          ./venv/bin/python3 mover.py /home/chris/code/upload/your-file
