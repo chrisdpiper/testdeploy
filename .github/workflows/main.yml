@@ -1,0 +1,20 @@
+name: Run on BeagleBone
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: [self-hosted, linux, ARM]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Run Python script
+        run: |
+          python3 scripts/mover.py
