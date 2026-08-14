@@ -8,42 +8,40 @@ jobs:
     runs-on: [self-hosted, Linux, X64]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Check workspace
+      - name: Test runner
         run: |
-          echo "Workspace: $GITHUB_WORKSPACE"
-          echo "Hostname: $(hostname)"
-          echo "Architecture: $(uname -m)"
-          echo "Files:"
-          ls -la
+          echo "RUNNER IS WORKING"
+          echo "User:"
+          whoami
+          echo "Home:"
+          echo "$HOME"
+          echo "Hostname:"
+          hostname
 
-      - name: Build
+      - name: Check code directory
         run: |
+          echo "Checking /home/chris/code"
+          ls -la /home/chris/code
+
+      - name: Run build
+        run: |
+          echo "STARTING BUILD"
           cd /home/chris/code
+          echo "Current directory:"
+          pwd
+          echo "Build script:"
+          ls -l build.sh
           echo "Running build.sh..."
-          chmod +x build.sh
-          ./build.sh
-
-      - name: Check build output
-        run: |
-          cd /home/chris/code
-          echo "Build output:"
-          cat time.txt
+          bash -x ./build.sh
+          echo "Build finished"
+          echo "Checking time.txt:"
           ls -l time.txt
-
-      - name: Check Python environment
-        run: |
-          /home/chris/code/venv/bin/python3 --version
-          /home/chris/code/venv/bin/python3 -c "import paramiko; print('Paramiko OK')"
-
-      - name: Check mover
-        run: |
-          ls -l /home/chris/code/mover.py
+          cat time.txt
 
       - name: Run mover
         run: |
+          echo "STARTING MOVER"
+          /home/chris/code/venv/bin/python3 --version
           /home/chris/code/venv/bin/python3 \
             /home/chris/code/mover.py \
-            "$GITHUB_WORKSPACE/time.txt"
+            /home/chris/code/time.txt
