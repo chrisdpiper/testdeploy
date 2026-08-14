@@ -4,48 +4,29 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-
-      - name: Make build script executable
-        run: chmod +x build.sh
-
-      - name: Build
-        run: ./build.sh
-
-      - name: Show build output
-        run: |
-          echo "Build files:"
-          find build -type f -maxdepth 3 -print
-
-      - name: Save build output
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: build/
-
-  deploy:
-    needs: build
+  build-and-deploy:
     runs-on: [self-hosted, Linux, X64]
 
     steps:
-      - name: Download build output
-        uses: actions/download-artifact@v4
-        with:
-          name: build-output
-          path: /home/chris/code/upload
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Show downloaded files
+      - name: Build
         run: |
-          echo "Downloaded files:"
-          find /home/chris/code/upload -type f -print
+          chmod +x build.sh
+          ./build.sh
 
-      - name: Run mover
+      - name: Show build output
+        run: |
+          cat time.txt
+          ls -l time.txt
+
+      - name: Copy build output to code directory
+        run: |
+          cp time.txt /home/chris/code/time.txt
+
+      - name: Run mover using venv
         run: |
           /home/chris/code/venv/bin/python3 \
             /home/chris/code/mover.py \
-            /home/chris/code/upload/output.bin
+            /home/chris/code/time.txt
