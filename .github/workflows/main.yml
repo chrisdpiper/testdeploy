@@ -1,20 +1,28 @@
-name: Run on BeagleBone
+name: Run NUC Script
 
 on:
-  push:
-    branches:
-      - main
-
   workflow_dispatch:
 
 jobs:
   run-script:
-    runs-on: [self-hosted, linux, X64]
+    runs-on: [self-hosted, Linux, X64]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Run Python script
+      - name: Check runner
         run: |
-          python3 scripts/mover.py
+          echo "Hostname:"
+          hostname
+
+          echo "Architecture:"
+          uname -m
+
+          echo "Python:"
+          python3 --version
+
+          echo "Script:"
+          ls -l /home/chris/code/*.py
+
+      - name: Run script
+        run: |
+          cd /home/chris/code
+          ./venv/bin/python3 mover.py
