@@ -18,15 +18,12 @@ jobs:
 
       - name: Show build output
         run: |
+          echo "Build output:"
           cat time.txt
           ls -l time.txt
 
-      - name: Copy build output to code directory
-        run: |
-          cp time.txt /home/chris/code/time.txt
-
-      - name: Run mover using venv
+      - name: Run mover
         run: |
           /home/chris/code/venv/bin/python3 \
             /home/chris/code/mover.py \
-            /home/chris/code/time.txt
+            "$GITHUB_WORKSPACE/time.txt"
